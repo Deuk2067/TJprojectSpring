@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tjoeun.Tjproject.DAO.MybatisDAO">
+
+	<!-- 메인글 전체 글의 개수 -->
+	<select id="selectCount" resultType="int">
+		select count(*) from main where deleted = 'no'
+	</select>
+	
+	<!-- 메인 글 1페이지를 불러옴 -->
+	<select id="selectList" parameterType="java.util.HashMap" resultType="vo">
+		<![CDATA[
+			select * from ( 
+				select rownum rnum, AA.* from (
+					select * from main where deleted = 'no' order by idx desc
+				) AA where rownum <= ${endNo}
+			) where rnum >= ${startNo}
+		]]>
+	</select>
+	
+	<!-- 조회수를 증가시킨다. -->
+	<update id="increment" parameterType="int">
+		update main set hit = hit + 1 where idx = #{idx} and deleted = 'no'
+	</update>
+	<!-- 메인 글 1건을 불러옴 -->
+	<select id="selectByIdx" parameterType="int" resultType="vo">
+		select * from main where idx = #{idx}
+	</select>
+
+	<!-- 조회수 랭킹 글 5건을 불러옴 -->
+	<select id="selectHit" resultType="vo">
+		<![CDATA[
+			select * from ( 
+				select rownum rnum, AA.* from (
+					select * from main where deleted = 'no' order by hit desc
+				) AA where rownum <= 5
+			) where rnum >= 1
+		]]>
+	</select>
+	
+	<!-- 추천수 랭킹 글 5건을 불러옴 -->
+	<select id="selectGood" resultType="vo">
+		<![CDATA[
+			select * from ( 
+				select rownum rnum, AA.* from (
+					select * from main where deleted = 'no' order by good desc
+				) AA where rownum <= 5
+			) where rnum >= 1
+		]]>
+	</select>
+	
+	<!-- 신규글 랭킹 글 5건을 불러옴 -->
+	<select id="selectNew" resultType="vo">
+		<![CDATA[
+			select * from ( 
+				select rownum rnum, AA.* from (
+					select * from main where deleted = 'no' order by idx desc
+				) AA where rownum <= 5
+			) where rnum >= 1
+		]]>
+	</select>
+
+	<!-- 로그인 계정 정보 일치 확인 -->
+	<select id="login" parameterType="vo" resultType="int">
+		select count(*) from register where id = #{id} and pw = #{pw}
+	</select>
+
+	<!-- 비밀번호 찾기 -->
+	<select id="search_pw" parameterType="com.tjoeun.Tjproject.VO.MemberVO" resultType="com.tjoeun.Tjproject.VO.MemberVO">
+  		select * from register where id = #{id} and name = #{name} and email = #{email}
+	</select>
+
+	<!-- 비밀번호 찾기 -->
+	<select id="search_pw_check" parameterType="com.tjoeun.Tjproject.VO.MemberVO" resultType="int"> 
+		select count(*) from register where id = #{id} and name = #{name} and email = #{email}
+	</select>
+	
+	<!-- 회원 가입 아이디 중복 검사 -->
+	<select id="registerProcess" parameterType="String" resultType="int"> 
+		select count(*) from register where id = #{id}
+	</select>
+	
+	<!-- 회원 가입할 데이터 저장 -->
+	<update id="insertRegister" parameterType="com.tjoeun.Tjproject.VO.MemberVO">
+		insert into register (id, pw, name, nick, email) values(#{id}, #{pw}, #{name}, #{nick}, #{email})
+	</update>
+
+	<!-- 글 저장 -->
+	<insert id="write" parameterType="vo">
+		insert into main (idx, subject, content, gup, category, id)
+		values (main_idx_seq.nextval, #{subject}, #{content}, #{gup}, #{category}, #{id})
+	</insert>
+
+	<!-- 메인 글 1건 수정 -->
+	<update id="update" parameterType="vo">
+		update main set subject = #{subject}, content = #{content}, category = #{category} where idx = #{idx} and deleted = 'no'
+	</update>
+
+	<!-- 메인글 1건 삭제 -->
+	<update id="delete" parameterType="int">
+		update main set deleted = 'yes', hit = -1000000, good = -1000000, category = '삭제' where idx = #{idx} and deleted = 'no'
+		<!-- update main set hit = -1000000, good = -1000000, category = '삭제', subject= '삭제된 글입니다', content = '삭제된 글입니다' where idx = #{idx} -->
+	</update>
+
+	<!-- 제목에 검색어를 포함하는 글의 개수를 얻어온다.-->
+	<select id="selectCountsearch" parameterType="param" resultType="int">
+		select count (*) from main where subject like '%'||#{searchVal}||'%' or category like '%'||#{searchVal}||'%'
+	</select>
+	
+		<!-- 제목에 검색어를 포함하는 페이지 분량의 글 목록을 얻어온다.-->
+	<select id="selectListsearch" parameterType="param" resultType="vo">
+		<![CDATA[
+			select * from ( 
+				select rownum rnum, AA.* from (
+					select * from main where subject like '%'||#{searchVal}||'%' or category like '%'||#{searchVal}||'%' order by idx desc
+				) AA where rownum <= #{endNo}
+			) where rnum >= #{startNo}
+		]]>
+    </select>
+	
+	<!-- if searchTag = id -> count -->
+    <select id="selectCount1" parameterType="param" resultType="int">
+    	select count(*) from main where id like '%'||#{searchVal}||'%' or category like '%'||#{searchVal}||'%'
+    </select>
+        
+    <!-- if searchTag = id -> list -->
+    <select id="selectList1" parameterType="param" resultType="vo">
+		<![CDATA[
+			select * from ( 
+				select rownum rnum, AA.* from (
+					select * from main where id like '%'||#{searchVal}||'%' or category like '%'||#{searchVal}||'%' order by idx desc
+				) AA where rownum <= #{endNo}
+			) where rnum >= #{startNo}
+		]]>
+    </select>
+
+	<!-- 댓글 하나를 저장 -->
+	<insert id="insertComment" parameterType="co">
+		insert into maincomment (idx, name, content, gup)
+		values (maincomment_idx_seq.nextval, #{name}, #{content}, #{gup})
+	</insert>
+
+	<!-- 댓글 목록 가져오기 -->
+	<select id="selectCommentList" parameterType="int" resultType="co">
+		select * from maincomment where gup = #{idx} order by idx asc
+	</select>
+
+	<!-- 댓글 하나를 가져옴 -->
+	<select id="selectByIdxCo" parameterType="int" resultType="co">
+		select * from maincomment where idx = #{idx}
+	</select>
+
+	<!-- 수정된 댓글 하나의 필드값을 수정 -->
+	<update id="updateCo" parameterType="co">
+		update maincomment set content = #{content} where idx = #{idx}
+	</update>
+	
+	<!-- 삭제된 댓글 하나의 삭제 여부 필드값을 'yes'로 수정 -->
+	<update id="deleteCommentCheck" parameterType="int">
+		update maincomment set deleted = 'yes' where idx = #{idx}
+	</update>	
+
+
+
+
+
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

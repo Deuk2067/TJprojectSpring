@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias alias="vo" type="com.tjoeun.Tjproject.VO.MainVO"/>
+		<typeAlias alias="co" type="com.tjoeun.Tjproject.VO.MainCommentVO"/>
+		<typeAlias alias="colist" type="com.tjoeun.Tjproject.VO.MainCommentList"/>
+		<typeAlias alias="param" type="com.tjoeun.Tjproject.VO.Param"/>
+	</typeAliases>
+</configuration>

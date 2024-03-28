@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean id="mainVO" class="com.tjoeun.Tjproject.VO.MainVO"/>
+	<bean id="list" class="com.tjoeun.Tjproject.VO.MainList"/>
+	<bean id="selectHit" class="com.tjoeun.Tjproject.VO.MainList"/>
+	<bean id="selectGood" class="com.tjoeun.Tjproject.VO.MainList"/>
+	<bean id="selectNew" class="com.tjoeun.Tjproject.VO.MainList"/>
+	<bean id="memberVO" class="com.tjoeun.Tjproject.VO.MemberVO"/>
+	<bean id="commentList" class="com.tjoeun.Tjproject.VO.MainCommentList"/>
+	<bean id="commentVO" class="com.tjoeun.Tjproject.VO.MainCommentVO"/>
+	<bean id="param" class="com.tjoeun.Tjproject.VO.Param"/>
+
+</beans>
